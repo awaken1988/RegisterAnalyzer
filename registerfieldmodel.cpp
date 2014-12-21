@@ -38,9 +38,9 @@ bool field_t::isValidRange()
 RegisterFieldModel::RegisterFieldModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-    m_bitFields.push_back(field_t("field1", 0, 3,  NsColoring::createNextColor()));
-    m_bitFields.push_back(field_t("field2", 4, 7,  NsColoring::createNextColor()));
-    m_bitFields.push_back(field_t("field3", 8, 31, NsColoring::createNextColor()));
+    m_bitFields.push_back(field_t("field1", 0, 3,  m_colorGen.getNextColor()));
+    m_bitFields.push_back(field_t("field2", 4, 7,  m_colorGen.getNextColor()));
+    m_bitFields.push_back(field_t("field3", 8, 31, m_colorGen.getNextColor()));
 }
 
 RegisterFieldModel::~RegisterFieldModel()
@@ -234,7 +234,7 @@ RegisterFieldModel::~RegisterFieldModel()
      }
 
      beginInsertRows(QModelIndex(), m_bitFields.size(), m_bitFields.size());
-     m_bitFields.push_back(   field_t(aName, field_t::INVALID_POS, field_t::INVALID_POS, NsColoring::createNextColor())   );
+     m_bitFields.push_back(   field_t(aName, field_t::INVALID_POS, field_t::INVALID_POS, m_colorGen.getNextColor())   );
      endInsertRows();
 
      updateRegisterValue(m_content);

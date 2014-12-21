@@ -69,6 +69,8 @@ protected:
     fieldlist_t     m_bitFields;
     QBitArray       m_content;
     QString         m_registerName;
+
+    NsColoring::ColorGenerator m_colorGen;
 signals:
     void rangeChanded();
     void fieldChanged(const QBitArray&);                       //new model

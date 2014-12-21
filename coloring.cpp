@@ -40,30 +40,33 @@ namespace NsColoring
     }
 
 
-    QColor createNextColor()
+    //-----------------------------------------------------
+    //ColorGenerator
+    //-----------------------------------------------------
+    ColorGenerator::ColorGenerator()
     {
-        static int i = -1;
-
-        i++;
-
-        QColor colors[] {
-                QColor(0xFF9933),
-                QColor(0x5C85D6),
-                QColor(0x669999),
-                QColor(0x00FFCC),
-                QColor(0x666699),
-                QColor(0x00CC66),
-                QColor(0x66FF66),
-                QColor(0xFF66CC),
-                QColor(0xFF9999),
-
-
-
-
-            };
-        const int size = sizeof(colors)/sizeof(colors[0]);
-
-        return colors[i%size];
+        m_colors =  {
+            QColor(0xFF9933),
+            QColor(0x5C85D6),
+            QColor(0x669999),
+            QColor(0x00FFCC),
+            QColor(0x666699),
+            QColor(0x00CC66),
+            QColor(0x66FF66),
+            QColor(0xFF66CC),
+            QColor(0xFF9999),
+        };
     }
+
+    QColor ColorGenerator::getNextColor()
+    {
+        m_index++;
+
+        if( m_index >= m_colors.size() )
+            m_index = 0;
+
+        return m_colors[m_index];
+    }
+
 
 }

@@ -2,7 +2,6 @@
 
 #include "mainwindow.h"
 #include "bitconverter.h"
-#include "testbitconverter.h"
 #include <QApplication>
 #include <QLineEdit>
 #include <QBitArray>

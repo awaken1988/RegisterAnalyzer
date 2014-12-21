@@ -3,6 +3,7 @@
 
 #include <QLineEdit>
 #include <QList>
+#include <QVector>
 #include <QTextLayout>
 #include <QInputMethodEvent>
 #include <QTextLayout>
@@ -20,7 +21,15 @@ namespace NsColoring
 
     QTextLayout::FormatRange    createFormat(QColor aBgColor, int aStartPos, int aEndPos);
 
-    QColor createNextColor();
+    class ColorGenerator
+    {
+    public:
+        ColorGenerator();
+        QColor getNextColor();
+    private:
+        int m_index = -1;
+        QVector<QColor> m_colors;
+    };
 }
 
 #endif //COLORING_H
