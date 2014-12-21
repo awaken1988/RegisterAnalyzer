@@ -1,0 +1,3 @@
+#http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
+#http://qt-project.org/doc/qt-4.8/tutorials-widgets-childwidget.html
+#http://qt-project.org/doc/qt-4.8/modelview.html
