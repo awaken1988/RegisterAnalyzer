@@ -14,19 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    registerfield.cpp \
-    bitconverter.cpp \
-    testbitconverter.cpp \
+    bitmanipulation/registerfield.cpp \
+    bitmanipulation/bitconverter.cpp \
     analyzerwidget.cpp \
     registerfieldmodel.cpp \
     coloring.cpp \
     registerfieldmodel_proxy.cpp
 
 HEADERS  += mainwindow.h \
-    registerfield.h \
-    bitconverter.h \
-    testbitconverter.h \
-    bitdef.h \
+    bitmanipulation/registerfield.h \
+    bitmanipulation/bitconverter.h \
+    bitmanipulation/bitdef.h \
     analyzerwidget.h \
     registerfieldmodel.h \
     coloring.h \
@@ -38,3 +36,4 @@ FORMS    += mainwindow.ui \
 OTHER_FILES += \
     references.txt
 
+INCLUDEPATH += bitmanipulation/
