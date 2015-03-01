@@ -1,5 +1,7 @@
 #include "analyzerwidget.h"
 
+//tools
+#include "tools/crctool/crctool.h"
 
 /*
  * for aModel there may be better solutions so that the Model is also destroyed with that widget
@@ -38,6 +40,8 @@ AnalyzerWidget::AnalyzerWidget(std::shared_ptr<RegisterFieldModel> aModel, QWidg
     //change register name
     connect(ui->ledit_registerName, &QLineEdit::textEdited, this, [=](QString aName){m_model->setRegisterName(aName);});
 
+    //tools
+    initTools();
 }
 
 void AnalyzerWidget::initInputConverters()
@@ -94,6 +98,20 @@ void AnalyzerWidget::initInputConverters()
     connect(this->m_model.get(), &RegisterFieldModel::fieldChanged, this, [=](const QBitArray&)->void {this->bitColoring();} );
 
 
+}
+
+//! Initialize additionals tools
+void AnalyzerWidget::initTools()
+{
+    int lastItem = 0;
+
+    //crc tool
+    {
+        CrcTool* crcTool = new CrcTool(*this->m_model.get());
+        lastItem = ui->registerToolBox->addItem(crcTool, "CRC");
+    }
+
+    ui->registerToolBox->setCurrentIndex(lastItem);
 }
 
 //TODO: make this function more versatile

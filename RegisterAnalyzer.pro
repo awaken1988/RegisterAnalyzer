@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     analyzerwidget.cpp \
     registerfieldmodel.cpp \
     coloring.cpp \
-    registerfieldmodel_proxy.cpp
+    registerfieldmodel_proxy.cpp \
+    bitmanipulation/crcgenerator.cpp \
+    tools/crctool/crctool.cpp
 
 HEADERS  += mainwindow.h \
     bitmanipulation/registerfield.h \
@@ -28,7 +30,9 @@ HEADERS  += mainwindow.h \
     analyzerwidget.h \
     registerfieldmodel.h \
     coloring.h \
-    registerfieldmodel_proxy.h
+    registerfieldmodel_proxy.h \
+    bitmanipulation/crcgenerator.h \
+    tools/crctool/crctool.h
 
 FORMS    += mainwindow.ui \
     analyzer.ui

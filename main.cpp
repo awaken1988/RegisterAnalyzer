@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 
     MainWindow* mainWindow = new MainWindow;
 
+    mainWindow->setWindowTitle("RegisterAnalyzer");
     mainWindow->show();
 
     //analyzerWidget->show();

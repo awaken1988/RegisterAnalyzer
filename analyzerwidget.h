@@ -24,6 +24,7 @@ class AnalyzerWidget : public QWidget
 public:
     explicit AnalyzerWidget(std::shared_ptr<RegisterFieldModel> aModel, QWidget *parent = 0);
     void initInputConverters();
+    void initTools();
     void bitColoring();
     ~AnalyzerWidget();
 
