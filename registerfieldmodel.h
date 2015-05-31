@@ -62,8 +62,9 @@ public:
     int         getBitArraySize();
     const fieldlist_t& getField();
     bool addRow(QString aName);
+    bool removeRows(int row, int count, const QModelIndex & parent = QModelIndex()) override;
 
-
+    bool import(RegisterFieldModel& aRegModel);
 
 protected:
     fieldlist_t     m_bitFields;
@@ -78,13 +79,6 @@ signals:
 public slots:
     void updateRegisterValue(const QBitArray& aContent);       //new model
     void setRegisterName(QString aName);
-
-
-
-
-
-
-
 };
 
 #endif // REGISTERFIELDMODEL_H

@@ -1,6 +1,10 @@
 #ifndef REGISTERFIELDMODEL_PROXY_H
 #define REGISTERFIELDMODEL_PROXY_H
 
+/*
+ *  mabe this class could be deleted because the base class also provide this function
+ */
+
 #include <QSortFilterProxyModel>
 
 class Registerfieldmodel_proxy : public QSortFilterProxyModel

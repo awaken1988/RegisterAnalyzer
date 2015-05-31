@@ -9,12 +9,6 @@ namespace NsCRC
 {
     QBitArray generate(QBitArray aPayload, QBitArray aPoly);
 
-    //-------------------------------------------
-    //TODO: move this functions in another class
-    //-------------------------------------------
-    QBitArray & 	operator<< ( QBitArray & out,  int ba );
-    QBitArray & 	operator>> ( QBitArray & in, int  ba );
-
     template<int bitlen> QBitArray toQBitarray(quint64 aVal)
     {
         QBitArray ret(bitlen, false);

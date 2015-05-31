@@ -174,4 +174,115 @@ namespace NsConverter
                 return 0x0;
         }
     }
+
+    QBitArray & 	operator<< ( QBitArray & out, int ba )
+    {
+        //qDebug()<<ba<<" before"<<out;
+
+
+        if( 0 == out.size() || 0 == ba )
+        {
+            //do nothing
+        }
+        else if( 1 == out.size() )
+        {
+            out[0] = false;
+        }
+        else
+        {
+            for(int k=0; k<ba; k++)
+            {
+                for(int i=out.size()-1; i>0; i--)
+                {
+                    out[i] = out[i-1];
+                    //qDebug()<<ba<<" shifting"<<out;
+                }
+                out[0] = false;
+            }
+        }
+
+
+        //qDebug()<<ba<<" after"<<out;
+        return out;
+    }
+
+    QBitArray & 	operator>> ( QBitArray & in, int ba )
+    {
+        if( 0 == in.size() || 0 == ba )
+        {
+            //do nothing
+        }
+        else if( 1 == in.size() )
+        {
+            in[0] = false;
+        }
+        else
+        {
+            for(int k=0; k<ba; k++)
+            {
+                for(int i=0; i<in.size()-1; i++)
+                {
+                    in[i] = in[i+1];
+                }
+                in[in.size()-1] = false;
+            }
+        }
+
+        return in;
+    }
+
+    QBitArray & 	operator<< ( QBitArray & out, shift_t ba )
+    {
+        if( ba.resize ) {
+            out.resize(out.size()+1);
+            out<<ba.shifts;
+            return out;
+        }
+        else {
+            return out<<ba.shifts;
+        }
+    }
+
+    QBitArray & 	operator>> ( QBitArray & in, shift_t  ba )
+    {
+        if( ba.resize ) {
+            in>>ba.shifts;
+            if( in.size() > 0)
+                in.resize(in.size()-1);
+            return in;
+        }
+        else {
+            return in<<ba.shifts;
+        }
+    }
+
+   QBitArray mirror(const QBitArray& in)
+   {
+       QBitArray ret(in);
+
+       for(int i=0; i<ret.size()/2; i++) {
+           int startPos = i;
+           int endPos   = ret.size()-1-i;
+
+           bool leftVal  = ret.testBit(startPos);
+           ret.setBit(startPos, ret.testBit(endPos));
+           ret.setBit(endPos, leftVal);
+       }
+
+       return ret;
+   }
+
+   QBitArray invert(const QBitArray& in)
+   {
+       QBitArray ret(in.size());
+
+       for(int i=0; i<in.size(); i++) {
+           ret.setBit(i, !in.testBit(i));
+       }
+
+       return ret;
+   }
+
+
+
 }

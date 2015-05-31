@@ -7,7 +7,7 @@ CrcTool::CrcTool(RegisterFieldModel& aRegModel, QWidget *parent ) :
    QFormLayout* formLayout = new QFormLayout(parent);
 
    QWidget* formWidget = new QWidget(parent);
-   QLabel* warningText = new QLabel("warning: there is no warranty about the corectness of the crc sum", parent );
+   QLabel* warningText = new QLabel("warning: there is no warranty\n about the corectness\n of the crc sum", parent );
 
    this->setLayout(mainLayout);        //is this a memory leak or handle this Qt?
    formWidget->setLayout(formLayout);
@@ -51,7 +51,7 @@ void CrcTool::updateCrc(const QBitArray& aContent)
 
     for(auto& iCalc: m_calc)
     {
-        qDebug()<<"poly: "<<iCalc.poly;
+        //qDebug()<<"poly: "<<iCalc.poly;
         QString   crcResultHex = "...";
 
 

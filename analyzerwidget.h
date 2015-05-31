@@ -25,7 +25,12 @@ public:
     explicit AnalyzerWidget(std::shared_ptr<RegisterFieldModel> aModel, QWidget *parent = 0);
     void initInputConverters();
     void initTools();
+    void initShiftInvert();
+    void initTreeView();
     void bitColoring();
+
+    std::shared_ptr<RegisterFieldModel> getModel();
+
     ~AnalyzerWidget();
 
     enum class edit_cause_t : int
@@ -53,6 +58,13 @@ signals:
     void registerEdited(edit_cause_t aCause);
 public slots:
 
+    //------------------
+    // For external use
+    //------------------
+    void shiftLeft();
+    void shiftRight();
+    void mirror();
+    void invert();
 };
 
 #endif // ANALYZERWIDGET_H

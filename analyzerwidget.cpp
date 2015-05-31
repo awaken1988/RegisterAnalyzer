@@ -2,6 +2,7 @@
 
 //tools
 #include "tools/crctool/crctool.h"
+#include <algorithm>
 
 /*
  * for aModel there may be better solutions so that the Model is also destroyed with that widget
@@ -13,35 +14,24 @@ AnalyzerWidget::AnalyzerWidget(std::shared_ptr<RegisterFieldModel> aModel, QWidg
 
     m_model = aModel;
 
-    //----------------------
-    // setup TreeView
-    //----------------------
-    {
-        Registerfieldmodel_proxy* modelProxy = new Registerfieldmodel_proxy(this);
-        modelProxy->setSourceModel(m_model.get());
-        modelProxy->setDynamicSortFilter(true);
 
-        ui->registerFieldView->setModel(modelProxy);
-        ui->registerFieldView->setSortingEnabled(true);
+
+
+
+    //call all init... methods
+    {
+        initTreeView();
+        initInputConverters();
+        initTools();
+        initShiftInvert();
     }
 
-    //add updateRegister
-//    connect(this, SIGNAL(registerEdited(edit_cause_t)), this, SLOT(updateRegister(edit_cause_t)));
-
-    //converters for inputs
-    initInputConverters();
-
-    //RegisterView Buttons
-    ui->btnAddRow->setIcon( style()->standardIcon(QStyle::SP_MediaVolume) );
-    connect(ui->btnAddRow, &QPushButton::clicked, this, [=](bool){
-        m_model->addRow(ui->ledit_addFieldName->text());
-        ui->ledit_addFieldName->clear(); });
-
-    //change register name
-    connect(ui->ledit_registerName, &QLineEdit::textEdited, this, [=](QString aName){m_model->setRegisterName(aName);});
-
-    //tools
-    initTools();
+    //init other gui elements
+    {
+        QHBoxLayout* inputLayout = dynamic_cast<QHBoxLayout*>(ui->hbox_input->layout());
+        inputLayout->setStretch(0, 3);
+        inputLayout->setStretch(1,1);
+    }
 }
 
 void AnalyzerWidget::initInputConverters()
@@ -112,6 +102,47 @@ void AnalyzerWidget::initTools()
     }
 
     ui->registerToolBox->setCurrentIndex(lastItem);
+
+    ui->registerToolBox->setItemText(0, "About");
+}
+
+//FIXME: delete this function
+void AnalyzerWidget::initShiftInvert()
+{
+    /*
+    using namespace NsConverter;
+
+
+    //shift
+    {
+        auto fnLeft = [&](bool aChecked) {
+            QBitArray tmp = m_model->getRegister();
+            tmp = tmp<<shift_t(1, true);
+            m_model->updateRegisterValue(tmp);
+            qDebug()<<"shiftLeft";
+        };
+        auto fnRight = [&](bool aChecked) {
+            QBitArray tmp = m_model->getRegister();
+            tmp = tmp>>shift_t(1, true);
+            m_model->updateRegisterValue(tmp);
+            qDebug()<<"shiftRight";
+        };
+
+        connect(ui->btn_shiftLeft, &QPushButton::clicked, fnLeft);
+        connect(ui->btn_shiftRight, &QPushButton::clicked, fnRight);
+    }
+
+    //invert
+    {
+        connect(ui->bn_invert,  &QPushButton::clicked, [&](){
+            QBitArray tmp = m_model->getRegister();
+            tmp = invert(tmp);
+            m_model->updateRegisterValue(tmp);
+        });
+    }
+
+    */
+
 }
 
 //TODO: make this function more versatile
@@ -124,8 +155,6 @@ void AnalyzerWidget::bitColoring()
         QList<QTextLayout::FormatRange> formats;
 
         const int binStrStart = ui->ledit_registerBin->text().size();
-
-        qDebug()<<binStrStart<<" blaaa";
 
         NsColoring::clearLineEditTextFormat(ui->ledit_registerBin);
 
@@ -161,7 +190,7 @@ void AnalyzerWidget::bitColoring()
             const int virtStart = textLen - currPos - markerLen;
             const int virtEnd   = textLen - currPos;
 
-              qDebug()<<"start="<<virtStart<<"; end="<<virtEnd<<endl;
+            //qDebug()<<"start="<<virtStart<<"; end="<<virtEnd<<endl;
 
             if( currPos % 4 )
                 formats.append(NsColoring::createFormat(oddColor, virtStart, virtEnd));
@@ -180,6 +209,112 @@ AnalyzerWidget::~AnalyzerWidget()
     delete ui;
 }
 
+void AnalyzerWidget::shiftLeft()
+{
+    using namespace NsConverter;
+
+    QBitArray tmp = m_model->getRegister();
+    tmp = tmp<<shift_t(1, true);
+    m_model->updateRegisterValue(tmp);
+    //qDebug()<<"shiftLeft";
+}
+
+void AnalyzerWidget::shiftRight()
+{
+    using namespace NsConverter;
+
+    QBitArray tmp = m_model->getRegister();
+    tmp = tmp>>shift_t(1, true);
+    m_model->updateRegisterValue(tmp);
+    //qDebug()<<"shiftRight";
+}
+
+void AnalyzerWidget::mirror()
+{
+    using namespace NsConverter;
+
+    QBitArray tmp = m_model->getRegister();
+    tmp = NsConverter::mirror(tmp);
+    m_model->updateRegisterValue(tmp);
+}
+
+
+void AnalyzerWidget::invert()
+{
+    using namespace NsConverter;
+
+    QBitArray tmp = m_model->getRegister();
+    tmp = NsConverter::invert(tmp);
+    m_model->updateRegisterValue(tmp);
+}
+
+void AnalyzerWidget::initTreeView()
+{
+    Registerfieldmodel_proxy* modelProxy = new Registerfieldmodel_proxy(this);
+
+    // Attach Model; Sorting proxy...
+    {
+        modelProxy->setSourceModel(m_model.get());
+        modelProxy->setDynamicSortFilter(true);
+
+        ui->registerFieldView->setModel(modelProxy);
+        ui->registerFieldView->setSortingEnabled(true);
+    }
+
+    // Row Selection; Ctrl/Shift Selection
+    {
+        QItemSelectionModel* currModel = ui->registerFieldView->selectionModel();
+
+        ui->registerFieldView->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui->registerFieldView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
+    }
+
+    //buttos
+    {
+        //add row
+        connect(ui->btnAddRow, &QPushButton::clicked, this, [=](bool){
+            m_model->addRow(ui->ledit_addFieldName->text());
+            ui->ledit_addFieldName->clear(); });
+
+        //delete selected rows
+        connect(ui->btnDelRow, &QPushButton::clicked, [&](bool) {
+            QModelIndexList selList = ui->registerFieldView->selectionModel()->selectedRows();
+
+            QSortFilterProxyModel* proxyPtr = dynamic_cast<QSortFilterProxyModel*>(ui->registerFieldView->model());
+
+            if( nullptr == proxyPtr) {
+                qDebug()<<"cannot cast QSortFilterProxyModel";
+            }
+
+
+            //translate proxies QModelIndex to RegisterField models
+           for(auto& i: selList) {
+               qDebug()<<"map "<<i<<" to "<<proxyPtr->mapToSource(i);
+               i  = proxyPtr->mapToSource(i);
+            };
+            std::sort(selList.begin(), selList.end(), [](const QModelIndex& a, const QModelIndex& b){
+                if(a.row() < b.row() )
+                    return false;
+                else
+                    return true;
+            });
+
+
+            for(const QModelIndex& i: selList) {
+                qDebug()<<"delete row="<<i;
+
+                m_model->removeRows(i.row(), 1);
+            }
+
+        });
+    }
+}
+
+std::shared_ptr<RegisterFieldModel> AnalyzerWidget::getModel()
+{
+    return m_model;
+}
 
 
 

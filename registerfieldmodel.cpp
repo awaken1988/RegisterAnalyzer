@@ -38,9 +38,11 @@ bool field_t::isValidRange()
 RegisterFieldModel::RegisterFieldModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
-    m_bitFields.push_back(field_t("field1", 0, 3,  m_colorGen.getNextColor()));
-    m_bitFields.push_back(field_t("field2", 4, 7,  m_colorGen.getNextColor()));
-    m_bitFields.push_back(field_t("field3", 8, 31, m_colorGen.getNextColor()));
+
+    m_bitFields.push_back(field_t("byte0", 0, 7,    m_colorGen.getNextColor()));
+    m_bitFields.push_back(field_t("byte1", 8, 15,    m_colorGen.getNextColor()));
+    m_bitFields.push_back(field_t("byte2", 16, 23,   m_colorGen.getNextColor()));
+    m_bitFields.push_back(field_t("byte3", 24, 31,  m_colorGen.getNextColor()));
 }
 
 RegisterFieldModel::~RegisterFieldModel()
@@ -76,7 +78,9 @@ RegisterFieldModel::~RegisterFieldModel()
         }
      }
 
-     if( role == Qt::BackgroundRole)
+     if( role == Qt::BackgroundRole
+             && index.column() != (int)field_map_e::Name
+             && index.column() != (int)field_map_e::ExtractedValue )
      {
          return QVariant(m_bitFields[index.row()].color);
      }
@@ -130,6 +134,8 @@ RegisterFieldModel::~RegisterFieldModel()
                     const int endPos   = m_bitFields[row].end;
 
                     if( !NsConverter::fromHexStr(bitVal, strVal, true) )
+                        return false;
+                    if( -1 == startPos || -1 == endPos)
                         return false;
 
                     //crop bits
@@ -217,6 +223,8 @@ RegisterFieldModel::~RegisterFieldModel()
          emit dataChanged(changedIndex1, changedIndex2);
          emit fieldChanged(m_content);
      }
+
+     emit fieldChanged(m_content);
  }
 
  const RegisterFieldModel::fieldlist_t& RegisterFieldModel::getField()
@@ -247,3 +255,54 @@ RegisterFieldModel::~RegisterFieldModel()
      m_registerName = aName;
      emit nameChanged(m_registerName);
  }
+
+ bool RegisterFieldModel::removeRows(int row, int count, const QModelIndex & parent)
+ {
+     if( 0 > row || 1 > count)
+         return false;
+
+     beginRemoveRows(parent, row, row+count-1);
+     {
+        qDebug()<<"remove_row="<<row<<" count="<<count;
+        if( 1 == count) {
+            //Note: using the 2 paremeter Vector::erase doesn't work
+            m_bitFields.erase(m_bitFields.begin()+row);
+        }
+        else {
+            for(int i=row+count-1; i >= row; i--)
+                m_bitFields.erase(m_bitFields.begin()+i);
+        }
+     }
+     endRemoveRows();
+
+     updateRegisterValue(m_content);
+
+     return true;
+ }
+
+ bool RegisterFieldModel::import(RegisterFieldModel& aRegModel)
+ {
+     //import bitfield definition
+     {
+        if( !removeRows(0, rowCount()) )
+            return false;
+
+        beginInsertRows(QModelIndex(), 0, aRegModel.rowCount()-1);
+        {
+            m_bitFields = aRegModel.m_bitFields;
+        }
+        endInsertRows();
+
+     }
+
+     //import value
+     {
+         updateRegisterValue(aRegModel.getRegister());
+     }
+
+     return true;
+ }
+
+
+
+
