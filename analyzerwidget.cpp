@@ -1,7 +1,7 @@
 #include "analyzerwidget.h"
 
 //tools
-#include "tools/crctool/crctool.h"
+#include "tools/crc/crctool.h"
 #include <algorithm>
 
 /*

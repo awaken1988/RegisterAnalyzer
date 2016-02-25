@@ -2,7 +2,7 @@
 #define CRCTOOL_H
 
 #include <QWidget>
-#include "../../bitmanipulation/crcgenerator.h"
+#include "crcgenerator.h"
 #include "../../registerfieldmodel.h"
 #include <QVBoxLayout>
 #include <QAbstractAnimation>
@@ -12,7 +12,6 @@
 #include <QLabel>
 #include <QBitArray>
 #include <QFormLayout>
-#include "../../bitmanipulation/crcgenerator.h"
 #include "../../bitmanipulation/bitconverter.h"
 
 class CrcTool : public QWidget
